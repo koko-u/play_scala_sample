@@ -23,7 +23,29 @@ object User extends Magic[User] {
 case class Post(
   id: Pk[Long],
   title: String, content: String, postedAt: Date, author_id: Long
-)
+) {
+  def prevNext = {
+    SQL(
+      """
+      (SELECT *, 'next' as pos
+         FROM Post
+        WHERE postedAt < {date}
+        ORDER BY postedAt DESC
+        LIMIT 1)
+      UNION
+      (SELECT *, 'prev' as pos
+         FROM Post
+        WHERE postedAt > {date}
+        ORDER BY postedAt DESC
+        LIMIT 1)
+      ORDER BY postedAt DESC
+      """
+    ).on("date" -> postedAt).as(
+      opt('pos.is("prev") ~> Post.on("")) ~ opt('pos.is("next") ~> Post.on(""))
+      ^^ flatten
+    )
+  }
+}
 
 object Post extends Magic[Post] {
   def allWithAuthor: List[(Post, User)] =
@@ -54,6 +76,7 @@ object Post extends Magic[Post] {
               WHERE p.id = {id}
       """
     ).on("id" -> id).as( Post ~< User ~< Post.spanM( Comment ) ^^ flatten ? )
+
 }
 
 // Comment

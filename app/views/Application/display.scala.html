@@ -13,7 +13,9 @@
 
 <div class="post @mode">
   <h2 class="post-title">
-    <a href="#">@post._1.title</a>
+    <a href="@action(controllers.Application.show(post._1.id()))">
+      @post._1.title
+    </a>
   </h2>
   <div class="post-metadata">
     <span class="post-author">by @post._2.fullname</span>
