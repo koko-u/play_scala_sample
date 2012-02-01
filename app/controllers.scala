@@ -6,7 +6,14 @@ import play.mvc._
 object Application extends Controller {
 
   import views.Application._
+  import models._
 
-  def index = html.index()
+  def index = {
+    val allPosts = Post.allWithAuthorAndComments
+    html.index(
+      front = allPosts.headOption,
+      older = allPosts.drop(1)
+    )
+  }
 
 }
