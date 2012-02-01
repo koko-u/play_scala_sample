@@ -1,0 +1,6 @@
+*.log
+logs/
+modules/
+target/
+test-result/
+tmp/
